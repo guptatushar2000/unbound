@@ -1,1 +1,10 @@
 fastapi
+uvicorn
+redis
+python-dotenv
+httpx
+langgraph
+openai
+langchain-openai
+langchain-core
+pydantic<2.0
