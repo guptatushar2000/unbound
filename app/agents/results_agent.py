@@ -5,26 +5,22 @@ import requests
 import copy
 from openai import OpenAI
 
-class BatchAgent:
+class ResultsAgent:
     def __init__(self):
         self._client = OpenAI()
-        self._mcp_service = "batch_service"
-        self._mcp_url = "http://localhost:8000/mcp"
+        self._mcp_service = "results_service"
+        self._mcp_url = "http://localhost:8080/mcp"
         # self._mcp_function_to_service = {}
         self._conversation_history = [{
             "role": "system",
             "content": """
-                You are an assistant that helps users with batch runs 
+                You are an assistant that helps users with retrieving batch results. 
                 
                 You can:
-                1. Start batch runs (CCAR, RiskApetite, Stress)
-                2. Check the status of runs
-                3. Kill running batch jobs
-                4. Get run logs
+                1. Retrieve stress batch results (which provide DS2.xlsx)
+                2. Retrieve allowance batch results (which provide DS1.xlsx)
 
-                For complex workflows, you should break them down into steps. For example:
-                - When a user wants to run a job, first start the run, then check its status until complete.
-                - Be sure to track run IDs when received from the batch service.
+                - For complex workflows, you should break them down into steps.
                 - Use proper parameters for each type of request."""
             }]
         

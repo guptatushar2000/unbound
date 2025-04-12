@@ -3,6 +3,7 @@ from langgraph.graph import StateGraph, START, END
 from langchain_openai import ChatOpenAI
 
 from app.agents.batch_agent import BatchAgent
+from app.agents.results_agent import ResultsAgent
 
 class ChatState(TypedDict, total=False):
     """State of the chat."""
@@ -17,28 +18,31 @@ class LangGraphEngine:
         )
 
         self.batch_agent = BatchAgent()
-        self.results_agent = None
+        self.results_agent = ResultsAgent()
 
         self.graph = self._build_graph()
 
     def _build_graph(self):
         builder = StateGraph(ChatState)
 
-        builder.add_node("batch_agent", self.batch_agent.process)
-        # builder.add_node("results_agent", self.results_agent.process)
+        # builder.add_node("batch_agent", self.batch_agent.process)
+        builder.add_node("results_agent", self.results_agent.process)
 
-        builder.add_edge(START, "batch_agent")
-        builder.add_edge("batch_agent", END)
+        # builder.add_edge(START, "batch_agent")
+        # builder.add_edge("batch_agent", END)
+
+        builder.add_edge(START, "results_agent")
+        builder.add_edge("results_agent", END)
 
         return builder.compile()
     
     async def process_message(self, message: str):
         state: ChatState = {
             "messages": [
-            {
-                "role": "user",
-                "content": message
-            }
+                {
+                    "role": "user",
+                    "content": message
+                }
             ]
         }
 
