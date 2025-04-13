@@ -1,6 +1,7 @@
-from typing import TypedDict, Optional, List, Dict, Any
+from typing import TypedDict, Optional, List, Dict, Any, Literal
 from langgraph.graph import StateGraph, START, END
 from langchain_openai import ChatOpenAI
+from langchain_core.messages import SystemMessage, HumanMessage
 
 from app.agents.batch_agent import BatchAgent
 from app.agents.results_agent import ResultsAgent
@@ -8,6 +9,8 @@ from app.agents.results_agent import ResultsAgent
 class ChatState(TypedDict, total=False):
     """State of the chat."""
     messages: List[Dict[str, Any]]
+    current_intent: Optional[str]
+    intent_history: List[Dict[str, Any]]
 
 class LangGraphEngine:
 
@@ -25,16 +28,62 @@ class LangGraphEngine:
     def _build_graph(self):
         builder = StateGraph(ChatState)
 
-        # builder.add_node("batch_agent", self.batch_agent.process)
+        builder.add_node("intent_classifier", self._intent_classifier)
+        builder.add_node("batch_agent", self.batch_agent.process)
         builder.add_node("results_agent", self.results_agent.process)
+
+        builder.add_edge(START, "intent_classifier")
+        builder.add_conditional_edges(
+            "intent_classifier",
+            self._route_to_agent,
+            {
+                "batch": "batch_agent",
+                "results": "results_agent",
+                "unknown": END
+            }
+        )
 
         # builder.add_edge(START, "batch_agent")
         # builder.add_edge("batch_agent", END)
 
-        builder.add_edge(START, "results_agent")
-        builder.add_edge("results_agent", END)
+        # builder.add_edge(START, "results_agent")
+        # builder.add_edge("results_agent", END)
 
         return builder.compile()
+    
+    async def _intent_classifier(self, state: ChatState) -> ChatState:
+        user_message = state["messages"][-1]["content"] if state["messages"] else ""
+        system_prompt = """
+        You are an intent classifier for a financial chatbot. Your job is to determine if the user's message is related to:
+        
+        1. Batch processing (starting runs, checking status, logs, etc.)
+        2. Results retrieval (getting stress test results, allowance results, etc.)
+        3. Something else (general questions, greetings, etc.)
+        
+        Respond with only one word: "BATCH", "RESULTS", or "UNKNOWN".
+        """
+        
+        response = await self.llm.ainvoke([
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=user_message)
+        ])
+
+        intent = response.content.strip().upper()
+        if intent not in ["BATCH", "RESULTS", "UNKNOWN"]:
+            intent = "UNKNOWN"
+
+        new_state = dict(state)
+        new_state["current_intent"] = intent
+        return new_state
+    
+    def _route_to_agent(self, state: ChatState) -> Literal["batch", "results", "unknown"]:
+        intent = state.get("current_intent", "UNKNOWN")
+        if intent == "BATCH":
+            return "batch"
+        elif intent == "RESULTS":
+            return "results"
+        else:
+            return "unknown"
     
     async def process_message(self, message: str):
         state: ChatState = {
