@@ -1,0 +1,37 @@
+BASIC
+1. Run a Stress test with base scenario for current quarter.
+2. Get the status of my latest run.
+3. Kill my current batch job.
+
+SEQUENTIAL
+4. Start a Stress run with scenario 'Severe' for cob date 20240331, 
+    then monitor its progress until completion, and once it's done, 
+    get the stress results for the same scenario and date.
+5. I need to run both CCAR and RiskApetite jobs for March 2024 quarter-end. 
+    Can you start both with the base scenario, wait for them to complete, and 
+    then summarize the logs from both runs?
+6. Start a Stress run with the 'Adverse' scenario. 
+    If it completes within 30 seconds, get the stress results. 
+    If it's still running after 30 seconds, terminate the run and 
+    start a RiskApetite run instead.
+
+ERROR HANDLING
+7. Start a batch run with type 'StressTesting' for today. 
+    If that doesn't work, try with the correct run type and let me know what happened.
+8. Try to get allowance results for runtype 'special', cob '20240401', and scenario 'extreme'. 
+    If you get an error, start a new run with the appropriate parameters first, 
+    then try getting the results again.
+9. Get the stress results for yesterday's run.
+
+MONITORING
+10. Start a CCAR run and give me regular updates on its progress every 20% completion. 
+    Once it's done, show me the final log.
+11. Show me all of my currently running batch jobs. 
+    If there are any that have been running for more than 1 minute, terminate them and provide their logs.
+
+CHAIN OF DEPENDENCIES
+12. I need a complete analysis pipeline: 
+    First, start a RiskApetite run with the base scenario. 
+    After it completes, use its run ID to check the logs for any warnings. 
+    Then start a Stress run with the same parameters. 
+    Finally, once the Stress run completes, get both allowance and stress results for comparison.
