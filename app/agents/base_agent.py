@@ -1,5 +1,5 @@
 from pydantic import BaseModel, PrivateAttr
-from typing import Dict, Any, Optional
+from typing import Dict, Any, List, Optional
 import json
 import httpx
 import copy
@@ -25,7 +25,9 @@ class BaseAgent(BaseModel):
         self._client = OpenAI()
         self._conversation_history = [{
             "role": "system",
-            "content": self.agent_prompt
+            "content": self.agent_prompt + """\n\n\n\t
+                [CONTEXT] You can use the following conversation history for more context: {conversation_history}
+            """
         }]
         
     async def _get_all_mcp_functions(self):
@@ -66,10 +68,13 @@ class BaseAgent(BaseModel):
         except httpx.RequestError as e:
             return {"error": f"Error calling function {function_name}: {str(e)}"}
         
-    async def _chat_with_gpt(self, messages: list) -> str:
+    async def _chat_with_gpt(self, messages: list, convesation_history: List[Dict[str, Any]]) -> str:
         functions = await self._mcp_to_openai_functions()
 
         local_conversation_history = copy.deepcopy(self._conversation_history)
+        local_conversation_history[0]["content"] = local_conversation_history[0]["content"].format(
+            conversation_history=convesation_history
+        )
 
         local_conversation_history.append({
             "role": "user",
@@ -120,8 +125,16 @@ class BaseAgent(BaseModel):
 
     async def process(self, state: Dict[str, Any]):
         new_state = dict(state)
-        last_user_message = next((msg["content"] for msg in reversed(state["messages"]) if msg["role"] == "user"), "")
-        response = await self._chat_with_gpt(last_user_message)
+        conversation_history = new_state.get("conversation_history", [])
+        if new_state["task_plan"]["task_type"] == "SIMPLE":
+            last_user_message = next((msg["content"] for msg in reversed(state["messages"]) if msg["role"] == "user"), "")
+        else:
+            last_user_message = new_state["current_subtask"]["description"]
+            new_state["messages"].append({
+                "role": "user",
+                "content": last_user_message
+            })
+        response = await self._chat_with_gpt(last_user_message, conversation_history)
         new_state["messages"].append({
             "role": "assistant",
             "content": response

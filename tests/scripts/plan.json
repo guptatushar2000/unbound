@@ -1,0 +1,39 @@
+{
+    "messages": [{
+        "role": "user", 
+        "content": "I want to start a batch run and check its status."
+    }], 
+    "task_plan": {
+        "task_type": "COMPLEX", 
+        "subtasks": [
+            {
+                "id": "subtask1", 
+                "description": "Start a batch run.", 
+                "agent": "aid_c0134f88-ac9f-40d2-b164-5640966d9e55", 
+                "depends_on": []
+            }, 
+            {
+                "id": "subtask2", 
+                "description": "Check the status of the batch run.", 
+                "agent": "aid_c0134f88-ac9f-40d2-b164-5640966d9e55", 
+                "depends_on": ["subtask1"]
+            }
+        ]
+    }, 
+    "error_count": 0, 
+    "subtasks": [
+        {
+            "id": "subtask1", 
+            "description": "Start a batch run.", 
+            "agent": "aid_c0134f88-ac9f-40d2-b164-5640966d9e55", 
+            "depends_on": []
+        }, 
+        {
+            "id": "subtask2", 
+            "description": "Check the status of the batch run.", 
+            "agent": "aid_c0134f88-ac9f-40d2-b164-5640966d9e55", 
+            "depends_on": ["subtask1"]
+        }
+    ], 
+    "completed_subtasks": []
+}

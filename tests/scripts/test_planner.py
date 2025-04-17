@@ -1,3 +1,6 @@
+import asyncio
+
+from app.agents.planner import Planner
 
 agent_registry = [
     {
@@ -51,3 +54,24 @@ agent_registry = [
         "groups": [],
     }
 ]
+
+def load_agents():
+    agents = []
+    for agent in agent_registry:
+        if "id" in agent and "description" in agent:
+            agents.append(agent)
+    return agents
+
+async def test_planner():
+    # planner = Planner(agents=load_agents())
+    planner = Planner(agents=load_agents())
+    op = await planner.process(state={"messages": [
+        {
+            "role": "user",
+            "content": "I want to start a batch run and check its status."
+        }
+    ]})
+    print(op)
+
+if __name__ == "__main__":
+    asyncio.run(test_planner())
