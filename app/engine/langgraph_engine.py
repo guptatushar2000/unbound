@@ -328,7 +328,7 @@ class LangGraphEngine:
         try:
             result = await self.graph.ainvoke(state)
         except Exception as e:
-            result = state.append({
+            result = state["messages"].append({
                 "role": "assistant",
                 "content": f"Error processing the request: {str(e)}"
             })
