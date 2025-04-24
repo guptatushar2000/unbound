@@ -6,7 +6,7 @@ Agentic Chatbot using Model Context Protocol
 
 # Graph Implementation
 The graph visually represents the relation between different Agentic Classes and the specific order in which they are orchestrated.
-<img width="680" alt="Image" src="https://github.com/user-attachments/assets/d022a455-d3b7-4079-a4b8-da96f6021042" />
+<img width="797" alt="Image" src="https://github.com/user-attachments/assets/d022a455-d3b7-4079-a4b8-da96f6021042" />
 
 # Features
 <img width="1064" alt="Image" src="https://github.com/user-attachments/assets/64561cde-f6e9-4683-93a9-9e5c3c0a1446" />
@@ -29,7 +29,7 @@ Follow the steps to set up and run the application:
 1. Create a virtual environment:
     ```bash
     python3 -m venv venv
-    source venv/bin/activate # On windows, user `venv\Scripts\activate`
+    source venv/bin/activate # On windows, use `venv\Scripts\activate`
 2. Install the required dependencies:
     ```bash
     pip install -r requirements.txt
