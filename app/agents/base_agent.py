@@ -120,7 +120,7 @@ class BaseAgent(BaseModel):
             break
         
         final_message = assistant_message.content if has_content else "I've completed the requested operations."
-        self._conversation_history = local_conversation_history
+        # self._conversation_history = local_conversation_history
         return final_message
 
     async def process(self, state: Dict[str, Any]):

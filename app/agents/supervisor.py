@@ -25,6 +25,12 @@ class Supervisor(BaseModel):
         "keywords": {{DICTIONARY OF KEY DETAILS LIKE RUN ID, STATUS, ETC.}}
     }}
 
+    Understand the difference between "is_valid" and "is_job_done" through the following examples:
+    - User Query: "Check the status of run ID 12345"
+    - Agent Response: "The status of run ID 12345 is 'running'."
+        -- is_valid: true
+        -- is_job_done: false
+
     ASSUME THAT AGENTS ARE HONEST AND DO NOT LIE. YOU NEED NOT VALIDATE FACTUAL ACCURACY OF THE RESPONSE.
 
      - Example of a valid query and response:
@@ -46,7 +52,7 @@ class Supervisor(BaseModel):
 
     def _validate_response(self, response: str, subtask: Dict[str, Any], conversation_history: List[Dict[str, str]]):
         response = self._client.responses.create(
-            model="o3-mini-2025-01-31",
+            model="o4-mini-2025-04-16",
             reasoning={"effort": "medium"},
             input=[{
                 "role": "user",
@@ -81,8 +87,8 @@ class Supervisor(BaseModel):
             return new_state
         
         new_state["conversation_history"].append({
-            "user": current_subtask["description"],
-            "assistant": agent_response,
+            "user_query": current_subtask["description"],
+            "assistant_response": agent_response,
             "keywords": status["keywords"]
         })
 

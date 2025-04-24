@@ -1,5 +1,5 @@
 BASIC
-1. Run a Stress test with base scenario for current quarter.
+1. Run a Stress test with base scenario for cob date "20231231".
 2. Get the status of my latest run.
 3. Kill my current batch job.
 

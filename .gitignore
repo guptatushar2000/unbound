@@ -173,3 +173,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Mock service files
+mock_services/batch_results/
+mock_services/run_logs/
